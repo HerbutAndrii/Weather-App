@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\WeatherRequest;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 use Stevebauman\Location\Facades\Location;
 
 class WeatherController extends Controller
@@ -40,12 +41,30 @@ class WeatherController extends Controller
         $apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric";
 
         $client = new Client();
-        $response = $client->get($apiUrl)->getBody();
-        $data = json_decode($response, true);
 
-        $iconCode = $data['weather'][0]['icon'];
-        $iconUrl = "icons/" . $iconCode . ".png";
+        try {
+            $response = $client->get($apiUrl);
+        } catch (RequestException $e) {
+            return response()->json(['error' => 'City not found']);
+        }
 
-        return view('index', compact('data', 'iconUrl'));
+        $weather = json_decode($response->getBody(), true);
+
+        $iconCode = $weather['weather'][0]['icon'];
+        $iconUrl = asset('storage/icons/' . $iconCode . '.png');
+
+        return response()->json([
+            'weather' => $weather, 
+            'iconUrl' => $iconUrl,
+        ]);
+    }
+
+    public function getForecast(string $city) {
+        $client = new Client();
+        $apiKey = "67eb439d946d3be3273ff030143857c0";
+        $responseFuture = $client->get("https://api.openweathermap.org/data/2.5/forecast?q=$city&appid=$apiKey&units=metric");
+        $futureWeather = json_decode($responseFuture->getBody(), true);
+
+        return view('forecast', ['futureWeather' => $futureWeather]);
     }
 }

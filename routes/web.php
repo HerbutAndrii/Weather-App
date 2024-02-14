@@ -17,3 +17,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [WeatherController::class, 'index'])->name('index');
 
 Route::post('/weather', [WeatherController::class, 'getWeather'])->name('weather');
+
+Route::get('/forecast/{city}', [WeatherController::class, 'getForecast'])->name('forecast');
