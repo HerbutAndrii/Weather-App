@@ -10,61 +10,72 @@ use Stevebauman\Location\Facades\Location;
 
 class WeatherController extends Controller
 {
+    private $apiKey;
+    private $client;
+
+    public function __construct() 
+    {
+        $this->apiKey = "67eb439d946d3be3273ff030143857c0";
+        $this->client = new Client(['base_uri' => 'https://api.openweathermap.org/data/2.5/']);
+    }
+
     public function index(Request $request) 
     {
         $ip = $request->getClientIp();
-        $client = new Client();
 
         if($ip == "127.0.0.1") {
-            $ip = $client->get('https://api.ipify.org')->getBody();
+            $ip = $this->client->get('https://api.ipify.org')->getBody();
         }
 
         $location = Location::get($ip);
         $city = $location->cityName;
 
-        $apiKey = "67eb439d946d3be3273ff030143857c0";
-        $apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric";
+        $response = $this->client->get('weather', [
+            'query' => [
+                'q' => $city,
+                'appid' => $this->apiKey,
+                'units' => 'metric'
+            ]
+        ]);
 
-        $response = $client->get($apiUrl)->getBody();
-        $data = json_decode($response, true);
+        $weather = json_decode($response->getBody(), true);
 
-        $iconCode = $data['weather'][0]['icon'];
-        $iconUrl = "icons/" . $iconCode . ".png";
-
-        return view('index', compact('data', 'iconUrl'));
+        return view('index', compact('weather'));
     }
 
     public function getWeather(WeatherRequest $request) 
     {
-        $apiKey = "67eb439d946d3be3273ff030143857c0";
         $city = $request->city;
-        $apiUrl = "http://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric";
-
-        $client = new Client();
 
         try {
-            $response = $client->get($apiUrl);
+            $response = $this->client->get('weather', [
+                'query' => [
+                    'q' => $city,
+                    'appid' => $this->apiKey,
+                    'units' => 'metric'
+                ]
+            ]);
         } catch (RequestException $e) {
             return response()->json(['error' => 'City not found']);
         }
 
         $weather = json_decode($response->getBody(), true);
 
-        $iconCode = $weather['weather'][0]['icon'];
-        $iconUrl = asset('storage/icons/' . $iconCode . '.png');
-
-        return response()->json([
-            'weather' => $weather, 
-            'iconUrl' => $iconUrl,
-        ]);
+        return response()->json(['weather' => $weather]);
     }
 
-    public function getForecast(string $city) {
-        $client = new Client();
-        $apiKey = "67eb439d946d3be3273ff030143857c0";
-        $responseFuture = $client->get("https://api.openweathermap.org/data/2.5/forecast?q=$city&appid=$apiKey&units=metric");
-        $futureWeather = json_decode($responseFuture->getBody(), true);
+    public function getForecast(string $city) 
+    {
+        $response = $this->client->get('forecast', [
+            'query' => [
+                'q' => $city,
+                'appid' => $this->apiKey,
+                'units' => 'metric'
+            ]
+        ]);
 
-        return view('forecast', ['futureWeather' => $futureWeather]);
+        $futureWeather = json_decode($response->getBody(), true);
+
+        return view('forecast', compact('futureWeather'));
     }
 }

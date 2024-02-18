@@ -2,11 +2,11 @@
 @section('title', 'Weather')
 @section('content')
     <div class="weather">
-        <p id="city">{{ $data['name'] }}</p>
-        <p id="temp">{{ $data['main']['temp'] }} °C</p>
-        <img src="{{ asset('storage/' . $iconUrl) }}" alt="weather">
-        <p id="weather">{{ $data['weather'][0]['main'] }}</p>
-        <a href="{{ route('forecast', $data['name']) }}">5-day forecast</a>
+        <p id="city">{{ $weather['name'] }}</p>
+        <p id="temp">{{ $weather['main']['temp'] }} °C</p>
+        <img src="{{ asset('storage/icons/' . $weather['weather'][0]['icon'] . '.png') }}" alt="icon">
+        <p id="weather">{{ $weather['weather'][0]['main'] }}</p>
+        <a href="{{ route('forecast', $weather['name']) }}">5-day forecast</a>
         <form action="{{ route('weather') }}" method="POST">
             @csrf
             <input type="text" name="city" id="input" placeholder="Enter a city"> <br>
@@ -29,7 +29,7 @@
                             $('#city').text(data.weather['name']);
                             $('#temp').text(data.weather['main']['temp'] + ' °C');
                             $('#weather').text(data.weather['weather'][0]['main']);
-                            $('img').attr('src', data.iconUrl);
+                            $('img').attr('src', "{{ asset('storage/icons/:icon.png') }}".replace(':icon', data.weather['weather'][0]['icon']));
                             $('#input').val('');
                             $('#city-error').hide();
                             $('a').attr('href', "{{ route('forecast', ':city') }}".replace(':city', data.weather['name']));
