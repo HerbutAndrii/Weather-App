@@ -2,7 +2,10 @@
 @section('title', 'Weather')
 @section('content')
     <div class="weather">
-        <p id="city">{{ $weather['name'] }}</p>
+        <p id="city">
+            <i class="fa-solid fa-location-dot"></i>
+            <span style="margin-left: 10px">{{ $weather['name'] }}</span>
+        </p>
         <p id="temp">{{ $weather['main']['temp'] }} °C</p>
         <img src="{{ asset('storage/icons/' . $weather['weather'][0]['icon'] . '.png') }}" alt="icon">
         <p id="weather">{{ $weather['weather'][0]['main'] }}</p>
@@ -26,7 +29,10 @@
                     data: $(this).serialize(),
                     success: function (data) {
                         if(typeof data.error === 'undefined') {
-                            $('#city').text(data.weather['name']);
+                            $('#city').html(
+                                '<i class="fa-solid fa-location-dot"></i>' +
+                                '<span style="margin-left: 10px">' + data.weather['name'] + '</span>'
+                            );
                             $('#temp').text(data.weather['main']['temp'] + ' °C');
                             $('#weather').text(data.weather['weather'][0]['main']);
                             $('img').attr('src', "{{ asset('storage/icons/:icon.png') }}".replace(':icon', data.weather['weather'][0]['icon']));

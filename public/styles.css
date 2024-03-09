@@ -25,7 +25,8 @@
     margin-top: 20px;
 }
 
-.weather button {
+.weather button, a,
+.back-link {
     cursor: pointer;
     display: inline-block;
     background-color: rgb(40, 255, 58);
@@ -77,22 +78,31 @@
     font-size: 30px;
 }
 
+.back-link {
+    margin: 20px;
+    width: auto;
+    padding: 10px;
+    background-color: rgb(224, 221, 26);
+}
+
 a {
-    color: rgb(32, 32, 124);;
+    background-color: rgb(40, 40, 240);
+    color: white;
     font-size: 30px;
+    width: 97%;
     text-align: center;
     text-decoration: none;
-    margin-left: 90px;
     margin-bottom: 5px;
 }
 
 h1 {
+    margin: 5px;
     color: white; 
     font-size: 70px; 
     text-align: center;
 }
 
 body {
-    background-color: rgb(32, 32, 124);
+    background-color: rgb(40, 40, 240);
     font-family: Cambria, Georgia, serif;
 }

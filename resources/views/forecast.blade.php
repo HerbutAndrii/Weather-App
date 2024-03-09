@@ -14,4 +14,10 @@
             @endif
         @endforeach
     </div>
+    <div style="display: flex; justify-content: center">
+        <a href="javascript:history.back()" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i>    
+            <span style="margin-left: 10px">Back</span>
+        </a>
+    </div>
 @endsection
